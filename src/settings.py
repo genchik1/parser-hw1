@@ -38,7 +38,6 @@ class Config:
     report_dir: Path | str = project_path.joinpath("reports")
     report_file_name_format: str = "report.log-{date}"  # Должен содержать `{date}`
     template_for_report_html: Path | str = project_path.joinpath("templates").joinpath("report.html")
-    encoding_for_report: str = "utf-8"
 
     logs_path_dir: Path | str = project_path.joinpath("tests").joinpath("data")
     log_pattern: str = _log_pattern

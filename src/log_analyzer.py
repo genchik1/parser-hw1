@@ -74,11 +74,10 @@ def run(config: Config) -> None:
         report,
         template=config.template_for_report_html,
         save_path=path_to_report_file,
-        encoding=config.encoding_for_report,
     )
 
 
-def save_report(data: list[dict[str, Any]], template: Path | str, save_path: Path | str, encoding: str) -> None:
+def save_report(data: list[dict[str, Any]], template: Path | str, save_path: Path | str) -> None:
     json_table = json.dumps(data)
 
     with open(template, "r") as file:
@@ -86,5 +85,7 @@ def save_report(data: list[dict[str, Any]], template: Path | str, save_path: Pat
 
     template_report_with_table = template_report.replace("$table_json", json_table)
 
-    with open(str(save_path), "w", encoding=encoding) as file:
+    with open(str(save_path), "w") as file:
         file.write(template_report_with_table)
+
+    logger.info("The report was saved successfully", path=save_path)

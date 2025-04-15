@@ -1,11 +1,9 @@
 FROM python:3.12
 
-WORKDIR /
+WORKDIR /app
 
-COPY . .
-
-RUN mkdir ./data
-VOLUME ./data
+RUN mkdir ./app
+COPY . ./app/
 
 RUN --mount=type=bind,target=./pyproject.toml,src=./pyproject.toml \
     --mount=type=bind,target=./uv.lock,src=./uv.lock \
@@ -15,5 +13,5 @@ RUN --mount=type=bind,target=./pyproject.toml,src=./pyproject.toml \
     && pip install --no-cache-dir -r requirements.txt \
     && rm requirements.txt
 
-ENTRYPOINT ["python", "./cli.py"]
-CMD [""]
+ENTRYPOINT ["python", "cli.py"]
+CMD []
