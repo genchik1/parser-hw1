@@ -1,4 +1,5 @@
 import gzip
+import os
 import re
 from datetime import datetime, date
 from functools import partial
@@ -15,7 +16,7 @@ logger = get_logger(__name__)
 def check_exists_path(path: str) -> None:
     if not Path(path).exists():
         logger.error("The specified folder does not exist.", path=path)
-        raise
+        raise FileNotFoundError("The specified folder does not exist.")
 
 
 def search_for_a_match(text: str, pattern: str) -> dict[str, AnyStr] | None:
@@ -70,11 +71,21 @@ def transform_log_data_to_dto_for_calc(log_data: LogData) -> DTOForCalc:
 
 
 def open_log_file(filename: str, encoding: str = "utf-8") -> Iterator[str]:
-    if filename.endswith(".gz"):
-        open_func = gzip.open
-    else:
-        open_func = partial(open, encoding=encoding)  # type:ignore[assignment]
+    # Проверка существования файла
+    if not os.path.exists(filename):
+        raise FileNotFoundError(f"File not found: {filename}")
 
-    with open_func(filename, "r") as file:
-        for line in file:
-            yield line.decode(encoding) if isinstance(line, bytes) else line
+    if not os.path.isfile(filename):
+        raise IsADirectoryError(f"The path specified is a directory, not a file: {filename}")
+
+    if not os.access(filename, os.R_OK):
+        raise PermissionError(f"No permission to read file: {filename}")
+
+    open_func = gzip.open if filename.endswith(".gz") else partial(open, encoding=encoding)  # type:ignore[assignment]
+
+    try:
+        with open_func(filename, "r") as file:
+            for line in file:
+                yield line.decode(encoding) if isinstance(line, bytes) else line
+    except gzip.BadGzipFile as err:
+        raise err

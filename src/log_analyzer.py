@@ -44,8 +44,8 @@ def get_parsed_logs(
             )
     else:
         if unsuccessful_parsing_counter > 0:
-            logger.error("Failed file parsing attempt.", paht=path)
-            raise
+            logger.error("Failed file parsing attempt.", path=path)
+            raise ValueError("Failed file parsing attempt.")
         logger.info("The log file is empty.", paht=path)
 
     return collection
@@ -55,7 +55,7 @@ def run(config: Config) -> None:
     last_file = search_last_file(str(config.logs_path_dir), config.log_file_name_format, config.date_format_in_name)
     if last_file is None:
         logger.error("File not found.")
-        raise
+        raise FileNotFoundError
 
     path_to_report_file = Path(config.report_dir).joinpath(f"report-{last_file.date:%Y.%m.%d}.html")
     if path_to_report_file.exists():

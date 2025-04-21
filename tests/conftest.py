@@ -3,5 +3,5 @@ import pytest
 
 
 @pytest.fixture
-def config():
-    return Config()
+def config(tmp_path):
+    yield Config(report_dir=tmp_path)
